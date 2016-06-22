@@ -9,40 +9,26 @@
 
     </head>
     <body>
-        <div ng-cloak ng-app="contactsApp" ng-controller="ContactsCtrl" class="container">
-            <nav class="navbar navbar-default">
-                <div class="container-fluid">
-                  <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-                      <span class="sr-only">Toggle navigation</span>
-                      <span class="icon-bar"></span>
-                      <span class="icon-bar"></span>
-                      <span class="icon-bar"></span>
-                    </button>
-                    <a class="navbar-brand" href="#"><img ng-show="loading" width=20 src="styles/images/loading_gif.gif" /></a>
-                  </div>
-                  <div style="height: 1px;" aria-expanded="false" id="navbar" class="navbar-collapse collapse">
-                    
-                    <ul class="nav navbar-nav navbar-right">
-                      <li class="active"><a href="./">Default <span class="sr-only">(current)</span></a></li>
-                      <li><a href="../navbar-static-top/">Static top</a></li>
-                      <li><a href="../navbar-fixed-top/">Fixed top</a></li>
-                    </ul>
-                  </div><!--/.nav-collapse -->
-                </div><!--/.container-fluid -->
-            </nav>
-                
+        <div ng-cloak ng-app="contactsApp" ng-controller="ContactsCtrl" class="container">    
             <div class="content">
-                <div class="row">
-                    <% contact %>
+                <div id="contact-page-title" class="row">
+                    <span ng-show="!open_add_contact" >Contact Page</span>
+                    <span ng-show="!isEditing() && open_add_contact" >Add New Contact</span>
+                    <span ng-show="isEditing()" >Edit <span ng-bind="contact.name"></span></span>
+                    <img ng-show="loading" width=20 src="styles/images/loading_gif.gif" />
+                    
+                    <button ng-show="!isEditing() && open_add_contact" ng-click="toggleAddForm()"
+                        class="btn btn-primary btn-sm pull-right">Close</button>
+                    <button ng-show="!isEditing() && !open_add_contact" ng-click="toggleAddForm()"
+                        class="btn btn-primary btn-sm pull-right">Add Contact</button>
                 </div>
-                <div class="row">
+                <div id="add-new-contact" ng-show="open_add_contact" class="row">
                     <form>
                         <div class="col-md-6">
                         <input type="hidden" ng-model="contact.id">
                             <div class="form-group">
                               <label for="contact-name">Name</label>
-                              <input type="text" ng-model="contact.name" class="form-control" id="contact-name" placeholder="Name">
+                              <input required type="text" ng-model="contact.name" class="form-control" id="contact-name" placeholder="Name">
                             </div>
                             <div class="form-group">
                               <label for="contact-nickname">Nickname</label>
@@ -57,7 +43,9 @@
                                <textarea id="contact-notes" ng-model="contact.notes" class="form-control" rows="3"></textarea>
                             </div>
                 
-                            <button type="submit" ng-click="saveContact()" class="btn btn-success">Submit</button>
+                            <button type="submit" ng-click="saveContact()" class="btn btn-success btn-sm">Submit</button>
+                            <button type="button" ng-show="isEditing()" ng-click="resetContact()"
+                                class="btn btn-primary btn-sm">Clear</button>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
@@ -79,11 +67,11 @@
                             </div>
                             <div class="form-group">
                               <label for="contact-phone">Phone</label>
-                              <input type="password" class="form-control" id="contact-phone" placeholder="Phone">
+                              <input type="text" ng-model="contact.phone" class="form-control" id="contact-phone" placeholder="Phone">
                             </div>
                             <div class="form-group">
                               <label for="contact-email">Email</label>
-                              <input type="email" class="form-control" id="contact-email" placeholder="Email">
+                              <input type="email" ng-model="contact.email" class="form-control" id="contact-email" placeholder="Email">
                             </div>
                             <div class="form-group">
                               <label for="other-contact">Other Contact Info</label>
@@ -96,19 +84,50 @@
                 <div class="row">
                     <table class="table table-striped">
                         <tr>
-                            <th>Name</th>
-                            <th>Nickname</th>
+                            <th>
+                                Name
+                                <button ng-click="getContacts()"
+                                    class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></button>
+                                <button ng-click="getContacts('name','desc')"
+                                    class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></button>
+                            </th>
+                            <th>
+                                Nickname
+                                <button ng-click="getContacts('nickname','asc')"
+                                    class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></button>
+                                <button ng-click="getContacts('nickname','desc')"
+                                    class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></button>
+                            </th>
+                            <th>
+                                Date Met
+                                <button ng-click="getContacts('date_met','asc')"
+                                    class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></button>
+                                <button ng-click="getContacts('date_met','desc')"
+                                    class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></button>
+                            </th>
+                            <th>
+                                Date Added
+                                <button ng-click="getContacts('created_at','asc')"
+                                    class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></button>
+                                <button ng-click="getContacts('created_at','desc')"
+                                    class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></button>
+                            </th>
                             <th>Actions</th>
                         </tr>
                         <tr ng-repeat="one in contacts">
                             <td ng-bind="one.name"></td>
                             <td ng-bind="one.nickname"></td>
+                            <td ng-bind="one.date_met"></td>
+                            <td ng-bind="one.created_at"></td>
                             <td><button ng-click="getOneContact(one.id)" class="btn btn-warning btn-xs">Edit</button></td>
                         </tr>
                     </table>
                 </div>
             </div>
         </div>
+    <script>
+        var base_url="{{ url('/') }}/";
+    </script>
     <script src="bower_components/jquery/dist/jquery.min.js"></script>
     <script src="styles/jquery-ui/jquery-ui.min.js"></script>
     <script src="bower_components/angular/angular.min.js"></script>

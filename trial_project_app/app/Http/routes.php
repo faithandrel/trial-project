@@ -18,7 +18,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('my-test', function () {
+Route::get('contact-page', function () {
     return view('contacts');
 });
 
@@ -41,8 +41,8 @@ Route::post('save-contact', function (Request $request) {
     return response()->json($contact);
 });
 
-Route::get('get-contacts', function () {
-    $contacts = Contact::all();
+Route::get('get-contacts/{sort?}/{order?}', function ($sort = 'name', $order = 'asc') {
+    $contacts = Contact::orderBy($sort,$order)->get();
     
     return response()->json($contacts);
 });

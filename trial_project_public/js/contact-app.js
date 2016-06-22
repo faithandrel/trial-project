@@ -61,7 +61,6 @@ contactsApp.directive('datepicker', function ($timeout) {
 });
 
 contactsApp.controller('ContactsCtrl', function ($scope, $http, $timeout) {
-    var base_url = 'http://localhost/trial_project/trial_project_public/';
     
     $scope.contact = {
         id: 0,
@@ -69,18 +68,20 @@ contactsApp.controller('ContactsCtrl', function ($scope, $http, $timeout) {
         nickname: '',
         date_met: '0000-00-00',
         notes: '',
-        contact_method: 'method3'
-	
+        contact_method: 'method3',
+	phone: '',
+        email: ''
     }
     
     $scope.contacts = [];
     
     $scope.loading = true;
+    $scope.open_add_contact = false;
     
     $scope.saveContact = function() {
         $scope.loading = true;
         $http.post(base_url+"save-contact", JSON.stringify($scope.contact)).success(function(data, status) {
-            return $scope.getContacts();
+            return $scope.getContacts(false, false);
         }).then(function(response) {
             $scope.loading = false;
         }, function(result) {
@@ -90,8 +91,15 @@ contactsApp.controller('ContactsCtrl', function ($scope, $http, $timeout) {
         });
     };
     
-    $scope.getContacts = function() {
-        return $http.get(base_url+"get-contacts").success(function(data, status) {
+    $scope.getContacts = function(sort,order) {
+       var url = 'get-contacts';
+       if (sort) {
+              url += '/' + sort;
+       }
+       if (order) {
+              url += '/' + order;
+       }
+       return $http.get(base_url+url).success(function(data, status) {
             $scope.contacts = data;
         })
     };
@@ -100,23 +108,47 @@ contactsApp.controller('ContactsCtrl', function ($scope, $http, $timeout) {
         $scope.loading = true;
         $http.get(base_url+"get-contact/"+id).success(function(data, status) {
             $scope.loading = false;
-            $scope.contact = data;
+            $scope.contact = data
+            $scope.open_add_contact = true;
+            window.scrollTo(0,0);
         });
     };
     
-    $scope.resetContact = function() {
-        $scope.contact = {
-            id: 0,
-            name: '',
-            nickname: '',
-            date_met: '0000-00-00',
-            notes: '',
-            contact_method: 'method3'
-            
-        }
+    $scope.toggleAddForm = function() {
+       $scope.resetContact();
+       if($scope.open_add_contact) {
+              $scope.open_add_contact = false;
+       }
+       else {
+              $scope.open_add_contact = true;
+       }
+    };
+    
+    $scope.isEditing = function() {
+       if ($scope.contact.id > 0) {
+              return true;
+       }
+       else {
+              return false;
+       }
     }
     
-    $scope.getContacts().then(function(response) {
+    $scope.resetContact = function() {
+       $scope.contact = {
+              id: 0,
+              name: '',
+              nickname: '',
+              date_met: '0000-00-00',
+              notes: '',
+              contact_method: 'method3',
+              phone: '',
+              email: ''
+       }
+    }
+    
+    
+    
+    $scope.getContacts(false, false).then(function(response) {
         $scope.loading = false;
     }, function(result) {
         
