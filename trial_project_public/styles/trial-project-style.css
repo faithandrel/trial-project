@@ -1,0 +1,12 @@
+body {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.navbar {
+  margin-bottom: 20px;
+}
+
+.contact-datepicker-buttons {
+  padding: 0px 5px 5px 5px;
+}
