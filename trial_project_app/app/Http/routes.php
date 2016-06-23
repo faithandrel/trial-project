@@ -12,8 +12,8 @@
 */
 
 use Illuminate\Http\Request;
-use App\Contact;
-use App\ContactDetails;
+use App\Models\Contact;
+use App\Models\ContactDetails;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,7 +29,7 @@ Route::post('save-contact', function (Request $request) {
     if($data['id'] > 0) {
         //Edit existing
         $contact = Contact::find($data['id']);
-        App\ContactDetails::where('contact_id', $contact->id)->delete();
+        ContactDetails::where('contact_id', $contact->id)->delete();
     }
     else {
         //Create new
@@ -68,4 +68,8 @@ Route::get('get-contact/{id}', function ($id) {
     $contact->contact_details = $details;
     
     return response()->json($contact);
+});
+
+Route::get('follow-up-page', function () {
+    return view('followups');
 });

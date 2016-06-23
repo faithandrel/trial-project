@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,6 +12,6 @@ class Contact extends Model
     
     public function contact_details()
     {
-        return $this->hasMany('App\ContactDetails');
+        return $this->hasMany('App\Models\ContactDetails');
     }
 }
