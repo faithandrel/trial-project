@@ -73,10 +73,17 @@
                               <label for="contact-email">Email</label>
                               <input type="email" ng-model="contact.email" class="form-control" id="contact-email" placeholder="Email">
                             </div>
-                            <div class="form-group">
-                              <label for="other-contact">Other Contact Info</label>
-                               <textarea id="other-contact" class="form-control" rows="3"></textarea>
+                            <div class="form-group other-contact" >
+                              <label>Other Contact Info</label>
+                                    <div ng-repeat="one_detail in contact.contact_details | limitTo:2" class="form-inline">
+                                        <input ng-model="one_detail.name" type="text" class="form-control other-contact-desc" placeholder="Description">
+                                        <input ng-model="one_detail.value" type="text" class="form-control other-contact-val" placeholder="Value">
+                                        <button type="button" ng-click="clearContactDetail(one_detail)"
+                                            class="btn btn-default btn-xs">&times;</button>
+                                    </div>
                             </div>
+                            <button type="button" data-toggle="modal" data-target=".bs-example-modal-sm"
+                                class="btn btn-primary btn-xs">Add More</button>
                         </div>
                     </form>
                 </div>
@@ -124,12 +131,37 @@
                     </table>
                 </div>
             </div>
+                
+            <!-- contact details modal -->
+            <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+              <div class="modal-dialog">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Other Contact</h4>
+                    </div>
+                    <div class="modal-body other-contact">
+                        <div ng-repeat="one_detail in contact.contact_details | startFrom:2" class="form-inline">
+                            <input ng-model="one_detail.name" type="text" class="form-control other-contact-desc" placeholder="Description">
+                            <input ng-model="one_detail.value" type="text" class="form-control other-contact-val" placeholder="Value">
+                            <button type="button" ng-click="clearContactDetail(one_detail)"
+                                class="btn btn-default btn-xs">&times;</button>
+                        </div>
+                        <button type="button" ng-click="addContactDetailField()"
+                                class="btn btn-primary btn-xs">Add More</button>
+                    </div>                
+                </div>
+              </div>
+            </div>
+                
         </div>
     <script>
         var base_url="{{ url('/') }}/";
     </script>
-    <script src="bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="bower_components/jquery-2.2.4.min/index.js"></script>
     <script src="styles/jquery-ui/jquery-ui.min.js"></script>
+    <script src="styles/bootstrap/js/bootstrap.min.js"></script>
     <script src="bower_components/angular/angular.min.js"></script>
     <script src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>
     <script src="js/contact-app.js"></script>

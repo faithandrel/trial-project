@@ -16,6 +16,18 @@ body {
     font-weight: bold;
 }
 
+.other-contact .form-inline {
+    margin-bottom: 5px;
+}
+
+.other-contact-val {
+    min-width: 60%;
+}
+
+.modal .other-contact {
+    margin-left: 4%;
+}
+
 #add-new-contact {
     margin-top: 1%;
     -webkit-animation: fadein 0.5s; /* Safari, Chrome and Opera > 12.1 */
