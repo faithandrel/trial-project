@@ -9,7 +9,7 @@
                 <span ng-show="!open_add_contact" >Contact Page</span>
                 <span ng-show="!isEditing() && open_add_contact" >Add New Contact</span>
                 <span ng-show="isEditing()" >Edit <span ng-bind="contact.name"></span></span>
-                <img ng-show="loading" width=20 src="styles/images/loading_gif.gif" />
+                <img ng-show="loading" width=20 src="{{ url('/') }}/styles/images/loading_gif.gif" />
                 
                 <button ng-show="!isEditing() && open_add_contact" ng-click="toggleAddForm()"
                     class="btn btn-primary btn-sm pull-right">Close</button>
@@ -40,6 +40,11 @@
                         <button type="submit" ng-click="saveContact()" class="btn btn-success btn-sm">Submit</button>
                         <button type="button" ng-show="isEditing()" ng-click="resetContact()"
                             class="btn btn-primary btn-sm">Clear</button>
+                        <a type="button" ng-show="isEditing()" href="{{ url('follow-up-page') }}/<% contact.id %>"
+                            class="btn btn-primary btn-sm pull-right">
+                            <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>
+                                &nbsp Go to Follow-ups
+                        </a>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">

@@ -14,4 +14,9 @@ class Contact extends Model
     {
         return $this->hasMany('App\Models\ContactDetails');
     }
+    
+    public function follow_up()
+    {
+        return $this->hasOne('App\Models\FollowUp');
+    }
 }

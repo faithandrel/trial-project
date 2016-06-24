@@ -23,10 +23,6 @@ contactsPageApp.controller('ContactsCtrl', function ($scope, $http, $timeout) {
         ]
     };
     
-    /*$scope.contact_details = [
-      
-    ];*/
-    
     $scope.contacts = [];
     
     $scope.loading = true;
@@ -35,7 +31,6 @@ contactsPageApp.controller('ContactsCtrl', function ($scope, $http, $timeout) {
     $scope.saveContact = function() {
         $scope.loading = true;
         $http.post(base_url+"save-contact", JSON.stringify($scope.contact)).success(function(data, status) {
-              console.log(data);
             return $scope.getContacts(false, false);
         }).then(function(response) {
             $scope.loading = false;

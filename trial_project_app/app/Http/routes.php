@@ -14,6 +14,8 @@
 use Illuminate\Http\Request;
 use App\Models\Contact;
 use App\Models\ContactDetails;
+use App\Models\FollowUp;
+use App\Models\FollowUpDetail;
 
 Route::get('/', function () {
     return view('welcome');
@@ -70,6 +72,66 @@ Route::get('get-contact/{id}', function ($id) {
     return response()->json($contact);
 });
 
-Route::get('follow-up-page', function () {
-    return view('followups');
+Route::get('follow-up-page/{id}', function ($id) {
+    return view('followups', ['contact_id' => $id]);
+});
+
+Route::get('model-test/{id}', function ($id) {
+     $contact = Contact::find($id);
+     
+     echo $contact->follow_up->next_contact();
+});
+
+Route::get('get-follow-up/{id}', function ($contact_id) {
+    $contact = Contact::find($contact_id);
+    $follow_up = $contact->follow_up;
+
+    $follow_up_data = [];
+    $follow_up_data['follow_up_details']  = [];
+    
+    if( !empty($follow_up) ) {
+        $follow_up_data['follow_up_details'] = $contact->follow_up->follow_up_details;
+        
+        if($follow_up->recurring) {
+            $follow_up->next_date = $follow_up->next_follow_up();
+        }
+        else {
+            $follow_up->next_date = false;
+        }
+    }
+    
+    $follow_up_data['contact'] = $contact;
+    $follow_up_data['follow_up'] = $follow_up;
+    
+    
+    return response()->json($follow_up_data);
+});
+
+Route::post('save-follow-up', function (Request $request) {
+    $data = $request->input();
+    
+    if($data['id'] > 0) {
+        //Edit existing
+        $follow_up = FollowUp::find($data['id']);
+    }
+    else {
+        //Create new
+        $follow_up = new FollowUp;
+    }
+
+    $follow_up->fill($data);
+    $follow_up->save();
+    
+    return response()->json($follow_up);
+});
+
+Route::post('save-follow-up-detail', function (Request $request) {
+    $data = $request->input();
+    
+    $follow_up = new FollowUpDetail;
+    
+    $follow_up->fill($data);
+    $follow_up->save();
+    
+    return response()->json($data);
 });
