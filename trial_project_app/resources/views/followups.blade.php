@@ -5,11 +5,9 @@
 @section('content')
     <div ng-app="followUpsApp" ng-controller="FollowUpCtrl" class="container">
     
-        <div class="content" ng-init="contact_id={{ $contact_id }}; getFollowUp(contact_id)">
+        <div id="follow-up-main" class="content" ng-init="contact_id={{ $contact_id }}; getFollowUp(contact_id)">
             <div class="row">
                  <img ng-show="loading" width=20 src="{{ url('/') }}/styles/images/loading_gif.gif" />
-                  <% contact_id %> <br/>
-                <% follow_up %>
             </div>
             <div class="row">
                 <div class="col-md-6">
@@ -27,47 +25,55 @@
                           <input ng-model="follow_up.recurring" type="checkbox"> Recurring
                         </label>
                     </div>
-                        
-                    <div class="form-group">
-                        <label for="recurrence">Recurrence</label>
-                        <select ng-options="item for item in recurrence" ng-model="follow_up.recurrence_unit"
-                                class="form-control" id="recurrence"></select>
-                    </div>
-                    
-                    <div class="form-group form-inline">
-                        <label for="recurrence-value">Every&nbsp&nbsp</label>
-                        <select ng-options="item for item in getNumber(6)" ng-model="follow_up.recurrence_value"
-                                class="form-control" id="recurrence-value"></select>
-                    </div>
-                    
+
                     <button type="submit" ng-click="saveFollowUp()" class="btn btn-success btn-sm">Submit</button>
                 </div>
-                <div class="col-md-6">
-                    <button type="button" ng-click="prepFollowUpDetail()" data-toggle="modal" data-target=".bs-example-modal-sm"
-                            class="btn btn-primary btn-xs">Add Notes</button>
                     
+                <div class="col-md-6">
+                    <div ng-show="follow_up.recurring">
+                        <div class="form-group">
+                            <label for="recurrence">Recurrence</label>
+                            <select ng-options="item for item in recurrence" ng-model="follow_up.recurrence_unit"
+                                    class="form-control" id="recurrence"></select>
+                        </div>
+                        
+                        <div ng-show="follow_up.recurrence_unit != 'yearly'" class="form-group form-inline">
+                            <label for="recurrence-value">Every&nbsp&nbsp</label>
+                            <select ng-options="item for item in getNumber()" ng-model="follow_up.recurrence_value"
+                                    class="form-control" id="recurrence-value"></select>
+                            <label>&nbsp&nbsp<span ng-bind="follow_up.recurrence_unit | recurrenceUnit"></span></label>
+                        </div>
+                    </div>
                 </div>
             </div>
                 
             <div class="row">
+                <button type="button" ng-click="prepFollowUpDetail()" data-toggle="modal" data-target=".bs-example-modal-sm"
+                            class="btn btn-primary btn-xs">Add Notes</button>
+                <br/><br/>
                 <table class="table table-striped">
                     <tr>
-                        <th>Follow-up for <% contact_name %></th>
+                        <th>Follow-up for <span ng-bind="contact_name"></span></th>
                         <th></th>
                         <th></th>
                         <th></th>
                     </tr>
                     <tr>
                         <td><strong>Date: </strong></td>
-                        <td><% follow_up.date %></td>
+                        <td ng-bind="follow_up.date"></td>
                         <td><strong>Recurring: </strong></td>
-                        <td><% follow_up.recurring %></td>
+                        <td ng-bind="follow_up.recurring.toString().charAt(0).toUpperCase() + follow_up.recurring.toString().slice(1)"></td>
                     </tr>
                     <tr>
                         <td><strong>Date Created: </strong></td>
-                        <td><% follow_up.created_at %></td>
+                        <td ng-bind="follow_up.created_at"></td>
                         <td><strong>Recurrence: </strong></td>
-                         <td>Every <% follow_up.recurrence_value %> <% follow_up.recurrence_unit %></td>
+                         <td>
+                            <span ng-if="follow_up.recurring">
+                                Every <span ng-if="follow_up.recurrence_unit != 'yearly'" ng-bind="follow_up.recurrence_value"></span>
+                                    <span ng-bind="follow_up.recurrence_unit | recurrenceUnit"></span>
+                            </span>
+                         </td>
                     </tr>
                         
                 </table>

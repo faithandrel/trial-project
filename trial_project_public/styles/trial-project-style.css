@@ -7,6 +7,8 @@ body {
   margin-bottom: 20px;
 }
 
+/* Contacts Page */
+
 .contact-datepicker-buttons {
   padding: 0px 5px 5px 5px;
 }
@@ -52,4 +54,9 @@ body {
 @-webkit-keyframes fadein {
     from { opacity: 0; }
     to   { opacity: 1; }
+}
+
+/* Contact's Follow-ups Page */
+#follow-up-main .row {
+  margin-bottom: 2%;
 }

@@ -93,11 +93,14 @@ Route::get('get-follow-up/{id}', function ($contact_id) {
         $follow_up_data['follow_up_details'] = $contact->follow_up->follow_up_details;
         
         if($follow_up->recurring) {
-            $follow_up->next_date = $follow_up->next_follow_up();
+            $follow_up->next_date = $follow_up->next_follow_up;
+            $follow_up->days_to_next_date =  $follow_up->days_to_next_follow_up;
         }
         else {
             $follow_up->next_date = false;
         }
+        
+        $follow_up->last_follow_up = $follow_up->last_follow_up;
     }
     
     $follow_up_data['contact'] = $contact;
@@ -105,6 +108,34 @@ Route::get('get-follow-up/{id}', function ($contact_id) {
     
     
     return response()->json($follow_up_data);
+});
+
+Route::get('get-contacts/{sort?}/{order?}', function ($sort = 'name', $order = 'asc') {
+    $contacts = Contact::orderBy($sort,$order)->get();
+    
+    return response()->json($contacts);
+});
+
+Route::get('get-all-follow-ups/{sort?}/{order?}', function ($sort = 'created_at', $order = 'asc') {
+    $follow_ups = FollowUp::orderBy($sort,$order)->get();
+    
+    foreach($follow_ups as $one_follow_up) {
+
+        //$one_follow_up->follow_up_detail = $one_follow_up->follow_up_details->sortByDesc('date')->first();
+        
+        if($one_follow_up->recurring) {
+            $one_follow_up->next_follow_up = $one_follow_up->next_follow_up;
+            $one_follow_up->days_to_next_follow_up =  $one_follow_up->days_to_next_follow_up;
+        }
+        else {
+            $one_follow_up->next_date = false;
+        }
+
+        $one_follow_up->last_follow_up = $one_follow_up->last_follow_up;
+        
+    }
+    
+    return response()->json($follow_ups);
 });
 
 Route::post('save-follow-up', function (Request $request) {

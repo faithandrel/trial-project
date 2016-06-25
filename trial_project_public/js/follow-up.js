@@ -3,23 +3,31 @@ var followUpsApp = angular.module('followUpsApp', ['contactsApp','ngSanitize'])
                                 $interpolateProvider.startSymbol('<%').endSymbol('%>');
                             }
                          );
+                         
+followUpsApp.filter('recurrenceUnit', function() {
+    return function(input) {
+       var result = '';
+       switch(input) {
+              case 'weekly':
+                     result = 'week/s';
+                     break;
+              case 'monthly':
+                     result = 'month/s';
+                     break;
+              case 'yearly':
+                     result = 'year';
+                     break;
+       }
+       return result;
+    }
+});
 
 followUpsApp.controller('FollowUpCtrl', function ($scope, $http, $timeout) {
        $scope.contact_id = 0;
        $scope.contact_name = '';
        
        $scope.recurrence = ['weekly', 'monthly', 'yearly'];
-       
-       $scope.getNumber = function(num) {
-              var num_array = [];
-              
-              for (i=0; i < num; i++) {
-                     num_array.push(i+1);
-              }
-              
-              return num_array;
-       }
-       
+
        $scope.follow_up = {
               id: 0,
               contact_id: 0,
@@ -43,6 +51,22 @@ followUpsApp.controller('FollowUpCtrl', function ($scope, $http, $timeout) {
        
        $scope.loading = false;
        
+       $scope.getNumber = function() {
+              var num = 6;
+              
+              if ($scope.follow_up.recurrence_unit == 'monthly') {
+                     num = 10;
+              }
+              
+              var num_array = [];
+              
+              for (i=0; i < num; i++) {
+                     num_array.push(i+1);
+              }
+              
+              return num_array;
+       }
+       
        $scope.saveFollowUp = function() {
               $scope.loading = true;
               $http.post(base_url+"save-follow-up", JSON.stringify($scope.follow_up)).success(function(data, status) {
@@ -61,6 +85,9 @@ followUpsApp.controller('FollowUpCtrl', function ($scope, $http, $timeout) {
               $scope.follow_up_detail.follow_up_id = $scope.follow_up.id;
               if(!$scope.follow_up.recurring) {
                      $scope.follow_up_detail.date = $scope.follow_up.date;
+              }
+              else if ($scope.follow_up.next_date != undefined && $scope.follow_up.next_date != false) {
+                     $scope.follow_up_detail.date = $scope.follow_up.next_date;
               }
        };
        
