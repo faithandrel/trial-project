@@ -23,7 +23,14 @@ contactsApp.directive('datepicker', function ($timeout) {
                 return yyyy + '-' + (mm[1]?mm:"0"+mm[0]) + '-' + (dd[1]?dd:"0"+dd[0]); 
     
             }
-
+            
+            elem.bind('focus', function() {
+                if(scope.theModel[scope.dateAttribute].length < 1) {
+                    scope.theModel[scope.dateAttribute] = scope.getMyDate();
+                    scope.$apply();
+                }
+            });
+            
             var todayAndYesterdayBtns = '<div class="contact-datepicker-buttons"><button id="datepicker-tday-btn" class="btn btn-primary btn-xs">Today</button>' +
                                         '<button id="datepicker-yday-btn" class="btn btn-primary btn-xs pull-right">Yesterday</button></div>';
              

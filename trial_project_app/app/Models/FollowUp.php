@@ -9,12 +9,17 @@ class FollowUp extends Model
     protected $table = 'follow_ups';
      
     protected $fillable = [
-        'contact_id', 'date', 'recurring', 'recurrence_unit', 'recurrence_value',
+        'contact_id', 'date', 'recurring', 'recurrence_unit', 'recurrence_value', 'completed'
     ];
     
     public function follow_up_details()
     {
         return $this->hasMany('App\Models\FollowUpDetail', 'follow_up_id');
+    }
+    
+    public function contact()
+    {
+        return $this->belongsTo('App\Models\Contact');
     }
     
     public function getLastFollowUpAttribute()
@@ -81,5 +86,35 @@ class FollowUp extends Model
         else {
             return false;
         }
+    }
+    
+    public static function sortByNextDate($a,$b)
+    {
+        return strtotime($a->next_follow_up) - strtotime($b->next_follow_up);
+    }
+    
+    public static function sortByLastDate($a,$b)
+    {
+        return strtotime($a->last_follow_up) - strtotime($b->last_follow_up);
+    }
+    
+    public static function sortByDaysToNext($a,$b)
+    {
+        return $a->days_to_next_follow_up - $b->days_to_next_follow_up;
+    }
+    
+    public static function sortByNextDateDesc($a,$b)
+    {
+        return strtotime($b->next_follow_up) - strtotime($a->next_follow_up);
+    }
+    
+    public static function sortByLastDateDesc($a,$b)
+    {
+        return strtotime($b->last_follow_up) - strtotime($a->last_follow_up);
+    }
+    
+    public static function sortByDaysToNextDesc($a,$b)
+    {
+        return $b->days_to_next_follow_up - $a->days_to_next_follow_up;
     }
 }

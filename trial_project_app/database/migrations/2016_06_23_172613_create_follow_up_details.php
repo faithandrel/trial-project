@@ -23,7 +23,6 @@ class CreateFollowUpDetails extends Migration
             $table->text('pre_meeting_notes');
             $table->text('post_meeting_notes');
             $table->date('date');
-            $table->boolean('completed');
             $table->timestamps();
         });
     }

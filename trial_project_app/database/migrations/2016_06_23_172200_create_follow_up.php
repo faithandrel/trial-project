@@ -22,6 +22,7 @@ class CreateFollowUp extends Migration
             $table->boolean('recurring');
             $table->string('recurrence_unit');
             $table->integer('recurrence_value');
+            $table->boolean('completed');
             $table->timestamps();
         });
     }

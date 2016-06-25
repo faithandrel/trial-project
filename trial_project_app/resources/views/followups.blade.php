@@ -9,7 +9,7 @@
             <div class="row">
                  <img ng-show="loading" width=20 src="{{ url('/') }}/styles/images/loading_gif.gif" />
             </div>
-            <div class="row">
+            <div ng-if="follow_up.id == 0" class="row">
                 <div class="col-md-6">
                     <input type="hidden" ng-model="follow_up.id" />
                     <input type="hidden" ng-model="follow_up.contact_id" />
@@ -48,7 +48,7 @@
             </div>
                 
             <div class="row">
-                <button type="button" ng-click="prepFollowUpDetail()" data-toggle="modal" data-target=".bs-example-modal-sm"
+                <button ng-if="allowAddNotesButton()" type="button" ng-click="prepFollowUpDetail()" data-toggle="modal" data-target=".bs-example-modal-sm"
                             class="btn btn-primary btn-xs">Add Notes</button>
                 <br/><br/>
                 <table class="table table-striped">
@@ -159,7 +159,7 @@
                     
                     <div class="checkbox">
                         <label>
-                          <input ng-model="follow_up_detail.completed" type="checkbox"> Completed
+                          <input ng-model="follow_up.completed" type="checkbox"> Completed
                         </label>
                     </div>
                     

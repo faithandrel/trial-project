@@ -31,7 +31,7 @@ followUpsApp.controller('FollowUpCtrl', function ($scope, $http, $timeout) {
        $scope.follow_up = {
               id: 0,
               contact_id: 0,
-              date: '0000-00-00',
+              date: '',
               recurring: false,
               recurrence_unit:  $scope.recurrence[0],
               recurrence_value: 1
@@ -42,7 +42,7 @@ followUpsApp.controller('FollowUpCtrl', function ($scope, $http, $timeout) {
                      reason: '',
                      pre_meeting_notes: '',
                      post_meeting_notes: '',
-                     date: '0000-00-00',
+                     date: '',
                      completed: false,
                      follow_up_id: 0
               };
@@ -70,8 +70,7 @@ followUpsApp.controller('FollowUpCtrl', function ($scope, $http, $timeout) {
        $scope.saveFollowUp = function() {
               $scope.loading = true;
               $http.post(base_url+"save-follow-up", JSON.stringify($scope.follow_up)).success(function(data, status) {
-                    console.log(data);
-                  return $scope.getContacts(false, false);
+                  return $scope.getFollowUp($scope.follow_up.contact_id);
               }).then(function(response) {
                   $scope.loading = false;
               }, function(result) {
@@ -83,21 +82,21 @@ followUpsApp.controller('FollowUpCtrl', function ($scope, $http, $timeout) {
        
        $scope.prepFollowUpDetail = function() {
               $scope.follow_up_detail.follow_up_id = $scope.follow_up.id;
-              if(!$scope.follow_up.recurring) {
-                     $scope.follow_up_detail.date = $scope.follow_up.date;
-              }
-              else if ($scope.follow_up.next_date != undefined && $scope.follow_up.next_date != false) {
+              if ($scope.follow_up.recurring && $scope.follow_up.next_date != undefined && $scope.follow_up.next_date != false) {
                      $scope.follow_up_detail.date = $scope.follow_up.next_date;
+              }
+              else {
+                     $scope.follow_up_detail.date = $scope.follow_up.date;
               }
        };
        
        $scope.getFollowUp = function(id) {
               $scope.loading = true;
               return $http.get(base_url+"get-follow-up/"+id).success(function(data, status) {
-                     console.log(new Date(data.follow_up.date));
                      $scope.loading = false;
                      $scope.contact_name = data.contact.name;
                      $scope.follow_up_detail_list = data.follow_up_details;
+                     console.log(data);
                      if (data.follow_up != null) {
                             $scope.follow_up = data.follow_up;
                             
@@ -129,24 +128,32 @@ followUpsApp.controller('FollowUpCtrl', function ($scope, $http, $timeout) {
                      });
               }
               else {
-                     $http.post(base_url+"save-follow-up", JSON.stringify($scope.follow_up)).success(function(data, status) {
-                            console.log(data);
-                            $scope.follow_up_detail.follow_up_id = data.id;
-                           return $http.post(base_url+"save-follow-up-detail", JSON.stringify($scope.follow_up_detail)).success(function(data, status) {
-                          
-                            });
+                     $http.post(base_url+"save-follow-up", JSON.stringify($scope.follow_up)).then(function(response) {
+                            console.log(response.data);
+                            $scope.follow_up_detail.follow_up_id = response.data.id;
+                           return $http.post(base_url+"save-follow-up-detail", JSON.stringify($scope.follow_up_detail));
                      }).then(function(response) {
-                          return $scope.getFollowUp($scope.follow_up.contact_id);
-                     }).then(function(response) {
-                         $scope.loading = false;
+                            return $scope.getFollowUp($scope.follow_up.contact_id);
                      }, function(result) {
                          
                      }).finally(function(response) {
-                         $('.modal').modal('hide')
+                            $scope.loading = false;
+                            $('.modal').modal('hide')
                      });
               }
               
               
        };
        
+       $scope.allowAddNotesButton = function() {
+              if ($scope.follow_up.recurring && !$scope.follow_up.completed) {
+                     return true;
+              }
+              else if (!$scope.follow_up.recurring && $scope.follow_up_detail_list.length < 1) {
+                     return true;
+              }
+              else {
+                     return false
+              }
+       }
 });

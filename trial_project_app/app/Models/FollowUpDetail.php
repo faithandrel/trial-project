@@ -10,7 +10,7 @@ class FollowUpDetail extends Model
      
     protected $fillable = [
         'follow_up_id', 'method', 'reason', 'pre_meeting_notes', 'post_meeting_notes',
-        'date', 'completed'
+        'date',
     ];
     
 

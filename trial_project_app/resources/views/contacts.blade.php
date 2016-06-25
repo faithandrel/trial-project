@@ -4,7 +4,7 @@
 
 @section('content')
     <div ng-cloak ng-app="contactsPageApp" ng-controller="ContactsCtrl" class="container">    
-        <div class="content">
+        <div ng-init="getContacts(0,0)" class="content">
             <div id="contact-page-title" class="row">
                 <span ng-show="!open_add_contact" >Contact Page</span>
                 <span ng-show="!isEditing() && open_add_contact" >Add New Contact</span>

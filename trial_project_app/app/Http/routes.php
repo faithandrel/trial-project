@@ -76,6 +76,10 @@ Route::get('follow-up-page/{id}', function ($id) {
     return view('followups', ['contact_id' => $id]);
 });
 
+Route::get('follow-up-list', function () {
+    return view('allfollowups');
+});
+
 Route::get('model-test/{id}', function ($id) {
      $contact = Contact::find($id);
      
@@ -116,12 +120,12 @@ Route::get('get-contacts/{sort?}/{order?}', function ($sort = 'name', $order = '
     return response()->json($contacts);
 });
 
-Route::get('get-all-follow-ups/{sort?}/{order?}', function ($sort = 'created_at', $order = 'asc') {
-    $follow_ups = FollowUp::orderBy($sort,$order)->get();
-    
+Route::get('get-all-follow-ups/{sort?}/{order?}', function ($sort = 'next_date', $order = 'desc') {
+    $follow_ups = FollowUp::all();
+    $follow_up_array = [];
     foreach($follow_ups as $one_follow_up) {
 
-        //$one_follow_up->follow_up_detail = $one_follow_up->follow_up_details->sortByDesc('date')->first();
+        $one_follow_up->contact_name = $one_follow_up->contact->name;
         
         if($one_follow_up->recurring) {
             $one_follow_up->next_follow_up = $one_follow_up->next_follow_up;
@@ -132,10 +136,42 @@ Route::get('get-all-follow-ups/{sort?}/{order?}', function ($sort = 'created_at'
         }
 
         $one_follow_up->last_follow_up = $one_follow_up->last_follow_up;
-        
+        $follow_up_array[] = $one_follow_up;
     }
     
-    return response()->json($follow_ups);
+    if($order == 'asc') {
+        switch($sort) {
+            case 'next_date':
+                usort($follow_up_array, array('App\Models\FollowUp', 'sortByNextDate'));
+                break;
+            case 'last_follow_up':
+                 usort($follow_up_array, array('App\Models\FollowUp', 'sortByLastDate'));
+                 break;
+            case 'days_to_next':
+                 usort($follow_up_array, array('App\Models\FollowUp', 'sortByDaysToNext'));
+                 break;
+            default:
+                usort($follow_up_array, array('App\Models\FollowUp', 'sortByNextDate'));
+                break;
+            }
+    }
+    else {
+        switch($sort) {
+            case 'next_date':
+                usort($follow_up_array, array('App\Models\FollowUp', 'sortByNextDateDesc'));
+                break;
+            case 'last_follow_up':
+                 usort($follow_up_array, array('App\Models\FollowUp', 'sortByLastDateDesc'));
+                 break;
+             case 'days_to_next':
+                 usort($follow_up_array, array('App\Models\FollowUp', 'sortByDaysToNextDesc'));
+            default:
+                usort($follow_up_array, array('App\Models\FollowUp', 'sortByNextDateDesc'));
+                break;
+            }
+    }
+    //echo var_dump($follow_up_array);
+    return response()->json($follow_up_array);
 });
 
 Route::post('save-follow-up', function (Request $request) {
