@@ -50,6 +50,13 @@
             <div class="row">
                 <button ng-if="allowAddNotesButton()" type="button" ng-click="prepFollowUpDetail()" data-toggle="modal" data-target=".bs-example-modal-sm"
                             class="btn btn-primary btn-xs">Add Notes</button>
+                <button ng-if="!follow_up.completed" ng-click="saveCompletedFollowUp()" class="btn btn-primary btn-xs pull-right" href='#'>
+                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>&nbsp Complete
+                </button>
+                <span  ng-if="follow_up.completed" class="label label-success pull-right">
+                    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>&nbsp Completed
+                </span>
+                    
                 <br/><br/>
                 <table class="table table-striped">
                     <tr>
@@ -90,11 +97,11 @@
                     </tr>
                     
                     <tr ng-repeat="detail in follow_up_detail_list">
-                        <td><% detail.date %></td>
-                        <td><% detail.reason %></td>
-                        <td><% detail.method %></td>
-                        <td><% detail.pre_meeting_notes %></td>
-                        <td><% detail.post_meeting_notes %></td>
+                        <td ng-bind="detail.date"></td>
+                        <td ng-bind="detail.reason"></td>
+                        <td ng-bind="detail.method"></td>
+                        <td ng-bind="detail.pre_meeting_notes"></td>
+                        <td ng-bind="detail.post_meeting_notes"></td>
                     </tr>   
                 </table>
             </div>
@@ -156,13 +163,7 @@
                                 ng-model="follow_up_detail.date" ng-disabled="!follow_up.recurring" type="text"
                                 class="form-control" id="follow-up-detail-date" placeholder="Date">
                     </div>
-                    
-                    <div class="checkbox">
-                        <label>
-                          <input ng-model="follow_up.completed" type="checkbox"> Completed
-                        </label>
-                    </div>
-                    
+
                     <button type="button" ng-click="saveFollowUpDetail()"
                             class="btn btn-success btn-sm">Save</button>
                 </div>                

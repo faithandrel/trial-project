@@ -125,7 +125,12 @@
                         <td ng-bind="one.nickname"></td>
                         <td ng-bind="one.date_met"></td>
                         <td ng-bind="one.created_at"></td>
-                        <td><button ng-click="getOneContact(one.id)" class="btn btn-warning btn-xs">Edit</button></td>
+                        <td>
+                            <button ng-click="getOneContact(one.id)" class="btn btn-warning btn-xs">Edit</button>
+                            <a class="btn btn-primary btn-xs" href='{{ url('follow-up-page') }}/<% one.id %>'>
+                                <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>&nbsp Follow-up
+                            </a>
+                        </td>
                     </tr>
                 </table>
             </div>

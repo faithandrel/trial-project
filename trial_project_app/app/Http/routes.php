@@ -18,187 +18,26 @@ use App\Models\FollowUp;
 use App\Models\FollowUpDetail;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('contact-page');
 });
 
 Route::get('contact-page', function () {
     return view('contacts');
 });
+Route::post('save-contact', 'ContactCtrl@saveContact');
+Route::get('get-contacts/{sort?}/{order?}', 'ContactCtrl@getContacts');
+Route::get('get-contact/{id}', 'ContactCtrl@getContact');
 
-Route::post('save-contact', function (Request $request) {
-    $data = $request->input();
-    
-    if($data['id'] > 0) {
-        //Edit existing
-        $contact = Contact::find($data['id']);
-        ContactDetails::where('contact_id', $contact->id)->delete();
-    }
-    else {
-        //Create new
-        $contact = new Contact;
-    }
 
-    $contact->fill($data);
-    $contact->save();
-    
-    $contact_details = [];
-    foreach($data['contact_details'] as $one_detail) {
-        if(!empty($one_detail['name']) AND !empty($one_detail['value'])) {
-            $contact_details[] = array('contact_id' => $contact->id,
-                                       'name' => $one_detail['name'],
-                                       'value' => $one_detail['value']);
-        }
-    }
-    ContactDetails::insert($contact_details);
-    
-    return response()->json($data);
-});
-
-Route::get('get-contacts/{sort?}/{order?}', function ($sort = 'name', $order = 'asc') {
-    $contacts = Contact::orderBy($sort,$order)->get();
-    
-    return response()->json($contacts);
-});
-
-Route::get('get-contact/{id}', function ($id) {
-    $contact = Contact::find($id);
-    
-    $details = [];
-    foreach($contact->contact_details as $detail) {
-        $details[] = array('name'=>$detail->name, 'value'=>$detail['value']);
-    }
-    $contact->contact_details = $details;
-    
-    return response()->json($contact);
-});
 
 Route::get('follow-up-page/{id}', function ($id) {
     return view('followups', ['contact_id' => $id]);
 });
-
 Route::get('follow-up-list', function () {
     return view('allfollowups');
 });
-
-Route::get('model-test/{id}', function ($id) {
-     $contact = Contact::find($id);
-     
-     echo $contact->follow_up->next_contact();
-});
-
-Route::get('get-follow-up/{id}', function ($contact_id) {
-    $contact = Contact::find($contact_id);
-    $follow_up = $contact->follow_up;
-
-    $follow_up_data = [];
-    $follow_up_data['follow_up_details']  = [];
-    
-    if( !empty($follow_up) ) {
-        $follow_up_data['follow_up_details'] = $contact->follow_up->follow_up_details;
-        
-        if($follow_up->recurring) {
-            $follow_up->next_date = $follow_up->next_follow_up;
-            $follow_up->days_to_next_date =  $follow_up->days_to_next_follow_up;
-        }
-        else {
-            $follow_up->next_date = false;
-        }
-        
-        $follow_up->last_follow_up = $follow_up->last_follow_up;
-    }
-    
-    $follow_up_data['contact'] = $contact;
-    $follow_up_data['follow_up'] = $follow_up;
-    
-    
-    return response()->json($follow_up_data);
-});
-
-Route::get('get-contacts/{sort?}/{order?}', function ($sort = 'name', $order = 'asc') {
-    $contacts = Contact::orderBy($sort,$order)->get();
-    
-    return response()->json($contacts);
-});
-
-Route::get('get-all-follow-ups/{sort?}/{order?}', function ($sort = 'next_date', $order = 'desc') {
-    $follow_ups = FollowUp::all();
-    $follow_up_array = [];
-    foreach($follow_ups as $one_follow_up) {
-
-        $one_follow_up->contact_name = $one_follow_up->contact->name;
-        
-        if($one_follow_up->recurring) {
-            $one_follow_up->next_follow_up = $one_follow_up->next_follow_up;
-            $one_follow_up->days_to_next_follow_up =  $one_follow_up->days_to_next_follow_up;
-        }
-        else {
-            $one_follow_up->next_date = false;
-        }
-
-        $one_follow_up->last_follow_up = $one_follow_up->last_follow_up;
-        $follow_up_array[] = $one_follow_up;
-    }
-    
-    if($order == 'asc') {
-        switch($sort) {
-            case 'next_date':
-                usort($follow_up_array, array('App\Models\FollowUp', 'sortByNextDate'));
-                break;
-            case 'last_follow_up':
-                 usort($follow_up_array, array('App\Models\FollowUp', 'sortByLastDate'));
-                 break;
-            case 'days_to_next':
-                 usort($follow_up_array, array('App\Models\FollowUp', 'sortByDaysToNext'));
-                 break;
-            default:
-                usort($follow_up_array, array('App\Models\FollowUp', 'sortByNextDate'));
-                break;
-            }
-    }
-    else {
-        switch($sort) {
-            case 'next_date':
-                usort($follow_up_array, array('App\Models\FollowUp', 'sortByNextDateDesc'));
-                break;
-            case 'last_follow_up':
-                 usort($follow_up_array, array('App\Models\FollowUp', 'sortByLastDateDesc'));
-                 break;
-             case 'days_to_next':
-                 usort($follow_up_array, array('App\Models\FollowUp', 'sortByDaysToNextDesc'));
-            default:
-                usort($follow_up_array, array('App\Models\FollowUp', 'sortByNextDateDesc'));
-                break;
-            }
-    }
-    //echo var_dump($follow_up_array);
-    return response()->json($follow_up_array);
-});
-
-Route::post('save-follow-up', function (Request $request) {
-    $data = $request->input();
-    
-    if($data['id'] > 0) {
-        //Edit existing
-        $follow_up = FollowUp::find($data['id']);
-    }
-    else {
-        //Create new
-        $follow_up = new FollowUp;
-    }
-
-    $follow_up->fill($data);
-    $follow_up->save();
-    
-    return response()->json($follow_up);
-});
-
-Route::post('save-follow-up-detail', function (Request $request) {
-    $data = $request->input();
-    
-    $follow_up = new FollowUpDetail;
-    
-    $follow_up->fill($data);
-    $follow_up->save();
-    
-    return response()->json($data);
-});
+Route::get('get-follow-up/{id}', 'FollowUpCtrl@getFollowUp');
+Route::get('get-all-follow-ups/{sort?}/{order?}', 'FollowUpCtrl@getAllFollowUps');
+Route::post('save-follow-up', 'FollowUpCtrl@saveFollowUp');
+Route::post('save-follow-up-detail', 'FollowUpCtrl@saveFollowUpDetail');
+Route::get('complete-follow-up/{id}', 'FollowUpCtrl@completeFollowUp');

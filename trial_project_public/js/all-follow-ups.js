@@ -4,6 +4,32 @@ var listFollowUpsApp = angular.module('listFollowUpsApp', ['contactsApp','ngSani
                             }
                          );
 
+listFollowUpsApp.filter('yesNo', function() {
+    return function(input) {
+       if (input) {
+              return 'Yes';
+       }
+       else {
+              return 'No';
+       }
+    }
+});
+
+listFollowUpsApp.filter('checkIfEmpty', function() {
+    return function(input) {
+       if ( input != undefined) {
+              if (input == false || (input.length != undefined && input.length < 1)) {
+                     return 'N/A';
+              }
+              else {
+                     return input;
+              }
+       }
+       else {
+              return 'N/A';
+       }
+    }
+});
 
 listFollowUpsApp.controller('AllFollowUpsCtrl', function ($scope, $http, $timeout) {
        

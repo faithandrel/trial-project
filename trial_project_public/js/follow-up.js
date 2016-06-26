@@ -145,6 +145,19 @@ followUpsApp.controller('FollowUpCtrl', function ($scope, $http, $timeout) {
               
        };
        
+       $scope.saveCompletedFollowUp = function() {
+              $scope.loading = true;
+              $http.get(base_url+"complete-follow-up/"+$scope.follow_up.id).success(function(data, status) { 
+                     return $scope.getFollowUp($scope.follow_up.contact_id);
+              }).then(function(response) {
+                     $scope.loading = false;
+              }, function(result) {
+                     
+              }).finally(function(response) {
+                    
+              });
+       }
+       
        $scope.allowAddNotesButton = function() {
               if ($scope.follow_up.recurring && !$scope.follow_up.completed) {
                      return true;

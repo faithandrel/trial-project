@@ -38,7 +38,7 @@ class FollowUp extends Model
     
     public function getNextFollowUpAttribute()
     {
-        if($this->recurring) {
+        if($this->recurring AND !$this->completed) {
            $details = $this->follow_up_details;
          
            if(count($details) < 1) {

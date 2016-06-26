@@ -11,9 +11,15 @@
             </div>
             <div class="row" ng-init="getAllFollowUps(0,0)">
                 <table class="table table-striped">
-                    <tr>
-                        <th>Date Created</th>
-                        <th>Contact</th>              
+                    <tr>  
+                        <th>Contact</th>
+                        <th>
+                            Completed
+                            <button ng-click="getAllFollowUps('completed','asc')"
+                                class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-up" aria-hidden="true"></span></button>
+                            <button ng-click="getAllFollowUps('completed','desc')"
+                                class="btn btn-default btn-xs"><span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span></button>
+                        </th>
                         <th>
                             Last Follow-up
                             <button ng-click="getAllFollowUps('last_date','asc')"
@@ -38,11 +44,15 @@
                         <th>Actions</th>
                     </tr>
                     <tr ng-repeat="follow_up in follow_up_list">
-                        <td ng-bind="follow_up.created_at"></td>
                         <td ng-bind="follow_up.contact_name"></td>
-                        <td ng-bind="follow_up.last_follow_up"></td>
-                        <td ng-bind="follow_up.next_follow_up"></td>
-                        <td ng-bind="follow_up.days_to_next_follow_up"></td>
+                        <td >
+                            <span ng-class="{'label label-success': follow_up.completed, 'label label-danger':!follow_up.completed}"
+                                  ng-bind="follow_up.completed | yesNo">
+                                  </span>
+                        </td>
+                        <td ng-bind="follow_up.last_follow_up | checkIfEmpty"></td>
+                        <td ng-bind="follow_up.next_follow_up | checkIfEmpty"></td>
+                        <td ng-bind="follow_up.days_to_next_follow_up | checkIfEmpty"></td>
                         <td><a class="btn btn-primary btn-xs" href='{{ url('follow-up-page') }}/<% follow_up.contact.id %>'>
                             <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span>&nbsp Open
                         </a></td>
